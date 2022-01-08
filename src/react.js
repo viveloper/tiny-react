@@ -52,4 +52,8 @@ export class Component {
   constructor(props) {
     this.props = props;
   }
+  setState(newState) {
+    this.state = newState;
+    this.render();
+  }
 }

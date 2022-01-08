@@ -9,11 +9,6 @@ class Count extends Component {
     };
   }
 
-  setState(newState) {
-    this.state = newState;
-    this.render();
-  }
-
   handlePlusClick = () => {
     this.setState({
       ...this.state,
