@@ -1,0 +1,16 @@
+{
+  "name": "tiny-react",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src -d build -w"
+  },
+  "repository": "https://github.com/viveloper/tiny-react.git",
+  "author": "viveloper <ucsik1234@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@babel/cli": "^7.16.7",
+    "@babel/core": "^7.16.7",
+    "@babel/preset-react": "^7.16.7"
+  }
+}
