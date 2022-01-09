@@ -24,11 +24,11 @@ class Count extends Component {
   };
 
   render() {
-    console.log(this.state);
     return (
       <div>
+        <h2>Counter</h2>
         <button onClick={this.handleMinusClick}>-</button>
-        <span>{this.state.count}</span>
+        <span className="mx">{this.state.count}</span>
         <button onClick={this.handlePlusClick}>+</button>
       </div>
     );
