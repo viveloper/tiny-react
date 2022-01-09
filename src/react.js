@@ -1,10 +1,20 @@
-export function render(component, container) {
-  if (typeof component === 'string') {
-    container.appendChild(document.createTextNode(component));
-  } else if (typeof component === 'number') {
-    container.appendChild(document.createTextNode(component.toString()));
-  } else if (typeof component === 'object') {
-    const { tagName, props, children } = component;
+let isFirstRender = true;
+let rootElement = undefined;
+let rootContainer = undefined;
+let classComponentId = 0;
+
+export function render(element, container) {
+  if (isFirstRender) {
+    rootElement = element;
+    rootContainer = container;
+    isFirstRender = false;
+  }
+  if (typeof element === 'string') {
+    container.appendChild(document.createTextNode(element));
+  } else if (typeof element === 'number') {
+    container.appendChild(document.createTextNode(element.toString()));
+  } else if (typeof element === 'object') {
+    const { tagName, props, children } = element;
     const $el = document.createElement(tagName);
     if (props) {
       for (const [propsKey, propsValue] of Object.entries(props)) {
@@ -36,8 +46,20 @@ export function render(component, container) {
 export function createElement(tagName, props, ...children) {
   if (typeof tagName === 'function') {
     if (tagName.prototype instanceof Component) {
-      const instance = new tagName({ ...props, children });
-      return instance.render();
+      const copiedClassComponentId = classComponentId++;
+      const instance = new tagName({
+        classComponentId: copiedClassComponentId,
+        ...props,
+        children,
+      });
+      const element = instance.render();
+      return {
+        ...element,
+        props: {
+          ...element.props,
+          elementId: copiedClassComponentId,
+        },
+      };
     }
     return tagName.apply(null, [props, ...children]);
   }
@@ -54,6 +76,36 @@ export class Component {
   }
   setState(newState) {
     this.state = newState;
-    this.render();
+    const newElement = this.render();
+
+    const currentElement = findElement(
+      rootElement,
+      this.props.classComponentId
+    );
+    currentElement.children = newElement.children;
+
+    while (rootContainer.firstChild) {
+      rootContainer.removeChild(rootContainer.firstChild);
+    }
+
+    render(rootElement, rootContainer);
+  }
+}
+
+function findElement(element, elementId) {
+  let target = null;
+  dfs(element);
+  return target;
+
+  function dfs(element) {
+    if (element.props && element.props.elementId === elementId) {
+      target = element;
+      return;
+    }
+    if (element.children) {
+      element.children.forEach((child) => {
+        dfs(child);
+      });
+    }
   }
 }
